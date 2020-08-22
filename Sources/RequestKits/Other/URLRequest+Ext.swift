@@ -6,8 +6,8 @@
 //  Copyright © 2020 Nghia Nguyen. All rights reserved.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 internal extension URLRequest {
     mutating func encoded(encodable: Encodable, encoder: JSONEncoder = JSONEncoder()) throws -> URLRequest {

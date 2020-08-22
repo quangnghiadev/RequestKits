@@ -6,12 +6,11 @@
 //  Copyright © 2020 Nghia Nguyen. All rights reserved.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 /// Represents an HTTP task.
 public enum Task {
-
     /// A request with no additional data.
     case requestPlain
 
@@ -34,8 +33,8 @@ public enum Task {
     case uploadCompositeMultipart(MultipartFormData, urlParameters: [String: Any])
 
     /// A file download task to a destination.
-    case downloadDestination(Destination)
+    case downloadDestination(DownloadRequest.Destination)
 
     /// A file download task to a destination with extra parameters using the given encoding.
-    case downloadParameters(parameters: [String: Any], encoding: ParameterEncoding, destination: Destination)
+    case downloadParameters(parameters: [String: Any], encoding: ParameterEncoding, destination: DownloadRequest.Destination)
 }

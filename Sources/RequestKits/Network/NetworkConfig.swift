@@ -6,32 +6,30 @@
 //  Copyright © 2020 Nghia Nguyen. All rights reserved.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 public struct NetworkConfig {
-    public var decoder: JSONDecoder
-    public var errorReporter: ErrorReportable?
-    public var adapters: [RequestAdapter]?
-    public var retriers: [RequestRetrier]?
-    public var monitors: [EventMonitor]?
+    public let decoder: JSONDecoder
+    public let errorReporter: ErrorReportable?
+    public let requestAdapters: [RequestAdapter]
+    public let requestRetrier: [RequestRetrier]
+    public let eventMonitors: [EventMonitor]
 
-    public init(decoder: JSONDecoder = JSONDecoder(), errorReporter: ErrorReportable? = nil, adapters: [RequestAdapter]? = nil, retriers: [RequestRetrier]? = nil, monitors: [EventMonitor]? = nil) {
+    public init(decoder: JSONDecoder = JSONDecoder(),
+                errorReporter: ErrorReportable? = nil,
+                requestAdapters: [RequestAdapter] = [],
+                requestRetrier: [RequestRetrier] = [],
+                eventMonitors: [EventMonitor] = [NetworkLogger(level: .info)])
+    {
         self.decoder = decoder
         self.errorReporter = errorReporter
-        self.adapters = adapters
-        self.retriers = retriers
-        self.monitors = monitors
+        self.requestAdapters = requestAdapters
+        self.requestRetrier = requestRetrier
+        self.eventMonitors = eventMonitors
     }
 
     var interceptor: Interceptor? {
-        guard adapters != nil || retriers != nil else { return nil }
-        let defaultRetriers: [RequestRetrier] = [ConnectionLostRetryPolicy()]
-        return Interceptor(adapters: adapters ?? [], retriers: (retriers ?? []) + defaultRetriers)
-    }
-
-    var eventMonitors: [EventMonitor] {
-        guard monitors != nil else { return [] }
-        return monitors!
+        return Interceptor(adapters: requestAdapters, retriers: requestRetrier + [ConnectionLostRetryPolicy()])
     }
 }

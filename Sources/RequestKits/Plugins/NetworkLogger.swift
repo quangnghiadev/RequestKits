@@ -6,17 +6,18 @@
 //  Copyright © 2020 Nghia Nguyen. All rights reserved.
 //
 
+import Alamofire
 import Foundation
 
-public final class NetworkLogger: EventMonitor {
+public struct NetworkLogger: EventMonitor {
     public enum Level: String {
         case verbose
         case debug
         case info
     }
 
-    let level: Level
-    public let queue = DispatchQueue(label: "me.network.eventmonitor.logger", qos: .utility, attributes: .concurrent)
+    private let level: Level
+    public let queue = DispatchQueue(label: "com.requestkits.logger", qos: .utility, attributes: .concurrent)
 
     public init(level: Level = .info) {
         self.level = level
@@ -25,7 +26,7 @@ public final class NetworkLogger: EventMonitor {
     public func request(_ request: DataRequest, didParseResponse response: DataResponse<Data?, AFError>) {
         var message: String = ""
 
-        let requestDescription = response.request.map { "\($0.httpMethod!) \($0)" } ?? "nil"
+        let requestDescription = response.request.map { "\($0.httpMethod!) \($0)" } ?? ""
         let requestBody = response.request?.httpBody.map { String(decoding: $0, as: UTF8.self) } ?? "None"
         let responseDescription = response.response.map { response in
             let sortedHeaders = response.headers.sorted()
@@ -49,7 +50,7 @@ public final class NetworkLogger: EventMonitor {
         let networkDurationString = "[Network Duration]: \(metricsDescription)"
         let serializationDurationString = "[Serialization Duration]: \(response.serializationDuration)s"
         let resultString = "[Result]: \(response.result)"
-        
+
         switch level {
             case .info:
                 message = [logLevelString, requestString, responseString].joined(separator: "\n")

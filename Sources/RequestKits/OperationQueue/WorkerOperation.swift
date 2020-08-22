@@ -33,8 +33,8 @@ final class WorkerOperation: AsynchronousOperation {
     }
 
     override func cancel() {
-        if !isCancelled && !isFinished {
-            log("WorkerOperation (\(id)) - cancel!")
+        if !isCancelled, !isFinished {
+            log("WorkerOperation (\(id)) - cancel task!")
             cancelTask?()
         }
         finish()

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public extension JSONDecoder {
+extension JSONDecoder {
     private static let nestedModelKeyPathCodingUserInfoKey = CodingUserInfoKey(rawValue: "nested_model_keypath")!
 
     private struct Key: CodingKey {

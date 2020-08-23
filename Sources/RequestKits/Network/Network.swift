@@ -21,8 +21,6 @@ public struct Network {
         self.session = Session(interceptor: config.interceptor, eventMonitors: config.eventMonitors)
     }
 
-    // MARK: Pure Request
-
     // Data Request
     @discardableResult
     public func request(_ convertible: URLRequestConvertible, validationType: ValidationType, completion: @escaping (Data?, Error?) -> Void) -> Cancellable {
@@ -91,9 +89,9 @@ public struct Network {
     }
 }
 
-public extension Network {
-    // MARK: Request with requestable
+// MARK: Request with requestable
 
+public extension Network {
     @discardableResult
     func request<T: Requestable>(requestable: T, completion: @escaping (Data?, Error?) -> Void) -> Cancellable {
         return sendRequest(requestable: requestable) { data, _, error in
@@ -134,9 +132,9 @@ public extension Network {
     }
 }
 
-public extension Network {
-    // MARK: Support Codable Response
+// MARK: Support Codable Response
 
+public extension Network {
     @discardableResult
     func request<T, H>(requestable: T, completion: @escaping (Result<H, Error>) -> Void) -> Cancellable where T: Requestable, H: Decodable {
         return request(requestable: requestable) { data, error in
@@ -160,9 +158,9 @@ public extension Network {
     }
 }
 
-public extension Network {
-    // MARK: Support Reactive Programming
+// MARK: Support Reactive Programming
 
+public extension Network {
     func rxRequest<T, H>(requestable: T, atKeyPath keyPath: String? = nil) -> Observable<H> where T: Requestable, H: Decodable {
         return Observable<H>.create { (observer) -> Disposable in
             let cancelable = self.request(requestable: requestable) { (result: Result<H, Error>) in
@@ -214,9 +212,9 @@ public extension Network {
     }
 }
 
-private extension Network {
-    // MARK: Helper
+// MARK: Helper
 
+private extension Network {
     private func decodeResponse<H: Decodable>(data: Data?, atKeyPath keyPath: String? = nil) -> Result<H, Error> {
         do {
             let resultObject: H

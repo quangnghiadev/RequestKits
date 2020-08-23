@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: Custom JSON Decoder for nested model keyPath
+
 extension JSONDecoder {
     private static let nestedModelKeyPathCodingUserInfoKey = CodingUserInfoKey(rawValue: "nested_model_keypath")!
 

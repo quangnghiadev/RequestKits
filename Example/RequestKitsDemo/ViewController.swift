@@ -8,18 +8,27 @@
 
 import Alamofire
 import RequestKits
+import RxSwift
 import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet var tableView: UITableView!
 
-    private let network = Network(config: .init(retriers: [RetryPolicy()], monitors: [NetworkLogger(level: .info)]))
+    private let disposeBag = DisposeBag()
+    private let network = Network(config: NetworkConfig())
 
-    let exampleTitle = ["Download", "Download -> Cancel before success", "Normal Request"]
+    let exampleTitle = ["Download", "Download -> Cancel before success", "Normal Request", "Requestable", "Reactive"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NetworkQueueManager.instance.config(.default)
+        RequestManager.instance.updateMaxConcurrentOperationCount(2)
+        RequestManager.instance.updateQualityOfService(.background)
+
+        DownloadManager.instance.updateMaxConcurrentOperationCount(2)
+        DownloadManager.instance.updateQualityOfService(.background)
+
+        UploadManager.instance.updateMaxConcurrentOperationCount(2)
+        UploadManager.instance.updateQualityOfService(.background)
 
         tableView.backgroundColor = .white
         tableView.delegate = self
@@ -54,7 +63,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print(url as Any)
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 cancel.cancel()
             }
         case 2:
@@ -73,8 +82,38 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print(data as Any)
                 print(error as Any)
             }
+        case 3:
+            network.request(requestable: GetAllPostsRequest()) { data, error in
+                print(data as Any)
+                print(error as Any)
+            }
+        case 4:
+            let request: Observable<EmptyEntity> = network.rxRequest(requestable: GetAllPostsRequest())
+            request.subscribe(onNext: { response in
+                print(response)
+            }).disposed(by: disposeBag)
         default:
             break
         }
+    }
+}
+
+struct EmptyEntity: Codable {}
+
+struct GetAllPostsRequest: Requestable {
+    var baseURL: URL {
+        return URL(string: "https://httpbin.org/")!
+    }
+
+    var path: String {
+        return "get"
+    }
+
+    var method: HTTPMethod {
+        return .get
+    }
+
+    var task: Task {
+        .requestPlain
     }
 }

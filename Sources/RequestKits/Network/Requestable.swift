@@ -1,33 +1,58 @@
 //
-//  Endpoint.swift
+//  Requestable.swift
 //  RequestKits
 //
-//  Created by Nghia Nguyen on 4/13/20.
+//  Created by Nghia Nguyen on 4/7/20.
 //  Copyright © 2020 Nghia Nguyen. All rights reserved.
 //
 
 import Alamofire
 import Foundation
 
-public class Endpoint: URLRequestConvertible {
-    
-    /// A string representation of the URL for the request.
-    public let targetType: TargetType
+public protocol Requestable: URLRequestConvertible {
+    /// The target's base `URL`.
+    var baseURL: URL { get }
 
-    var url: URL {
-        return targetType.baseURL.appendingPathComponent(targetType.path)
+    /// The path to be appended to `baseURL` to form the full `URL`.
+    var path: String { get }
+
+    /// The HTTP method used in the request.
+    var method: HTTPMethod { get }
+
+    /// The type of validation to perform on the request. Default is `.none`.
+    var validationType: ValidationType { get }
+
+    /// The headers to be used in the request.
+    var headers: HTTPHeaders? { get }
+
+    /// KeyPath for decoding
+    var keyPath: String? { get }
+
+    /// The type of HTTP task to be performed.
+    var task: Task { get }
+}
+
+public extension Requestable {
+    var keyPath: String? {
+        return nil
     }
-    
-    public init(targetType: TargetType) {
-        self.targetType = targetType
+
+    var validationType: ValidationType {
+        return .successCodes
     }
-    
+
+    var headers: HTTPHeaders? {
+        return nil
+    }
+}
+
+extension Requestable {
     public func asURLRequest() throws -> URLRequest {
-        var request = URLRequest(url: url)
-        request.method = targetType.method
-        request.allHTTPHeaderFields = targetType.headers?.dictionary
+        var request = URLRequest(url: baseURL.appendingPathComponent(path))
+        request.method = method
+        request.allHTTPHeaderFields = headers?.dictionary
 
-        switch targetType.task {
+        switch task {
         case .requestPlain, .uploadMultipart, .downloadDestination:
             return request
         case let .requestJSONEncodable(encodable):
@@ -49,27 +74,5 @@ public class Endpoint: URLRequestConvertible {
             let urlEncoding = URLEncoding(destination: .queryString)
             return try bodyfulRequest.encoded(parameters: urlParameters, parameterEncoding: urlEncoding)
         }
-    }
-}
-
-/// Required for using `Endpoint` as a key type in a `Dictionary`.
-extension Endpoint: Equatable, Hashable {
-    public func hash(into hasher: inout Hasher) {
-        guard let request = urlRequest else {
-            hasher.combine(url)
-            return
-        }
-        hasher.combine(request)
-    }
-
-    /// Note: If both Endpoints fail to produce a URLRequest the comparison will
-    /// fall back to comparing each Endpoint's hashValue.
-    public static func == (lhs: Endpoint, rhs: Endpoint) -> Bool {
-        let lhsRequest = lhs.urlRequest
-        let rhsRequest = rhs.urlRequest
-        if lhsRequest != nil, rhsRequest == nil { return false }
-        if lhsRequest == nil, rhsRequest != nil { return false }
-        if lhsRequest == nil, rhsRequest == nil { return lhs.hashValue == rhs.hashValue }
-        return (lhsRequest == rhsRequest)
     }
 }

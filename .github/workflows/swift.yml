@@ -1,4 +1,4 @@
-name: Swift
+name: CI
 
 on:
   push:
@@ -7,13 +7,29 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
-    runs-on: macos-latest
-
+  test:
+    runs-on: macOS-latest
+    env:
+      PROJECT: RequestKits.xcodeproj
+      SCHEME: RequestKits-Package
     steps:
-    - uses: actions/checkout@v2
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+    - uses: actions/checkout@v1
+
+    - name: List SDKs and Devices
+      run: xcodebuild -showsdks; instruments -s
+
+    - name: Generate Xcode Project
+      run: swift package generate-xcodeproj
+
+    - name: Build and Test
+      run: |
+        set -o pipefail && xcodebuild clean build \
+          -project "$PROJECT" \
+          -scheme "$SCHEME" \
+          -sdk "$SDK" \
+          -destination "$DESTINATION" \
+          -configuration Debug \
+          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -c;
+      env:
+        SDK: iphonesimulator
+        DESTINATION: platform=iOS Simulator,name=iPhone 11 Pro,OS=latest

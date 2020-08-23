@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: macOS-latest
+    env:
+      PROJECT: RequestKits.xcodeproj
+      SCHEME: RequestKits-Package
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: List SDKs and Devices
+      run: xcodebuild -showsdks; instruments -s
+
+    - name: Generate Xcode Project
+      run: swift package generate-xcodeproj
+
+    - name: Build and Test
+      run: |
+        set -o pipefail && xcodebuild clean build \
+          -project "$PROJECT" \
+          -scheme "$SCHEME" \
+          -sdk "$SDK" \
+          -destination "$DESTINATION" \
+          -configuration Debug \
+          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty -c;
+      env:
+        SDK: iphonesimulator
+        DESTINATION: platform=iOS Simulator,name=iPhone 11 Pro,OS=latest

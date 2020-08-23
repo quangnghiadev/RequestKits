@@ -62,7 +62,6 @@ Make a request with:
 ```swift
 var request = URLRequest(url: URL(string: "https://httpbin.org/get")!)
 request.method = .get
-request.addValue("Helo", forHTTPHeaderField: UUID().uuidString)
 network.request(request, validationType: .successCodes) { data, error in
     print(data as Any)
     print(error as Any)
@@ -106,7 +105,7 @@ request.subscribe(onNext: { response in
 }).disposed(by: disposeBag)
 ```
 
-### Operation Queue
+## Operation Queue
 
 - Request Queue Manager
 
@@ -121,7 +120,7 @@ UploadManager.instance.updateMaxConcurrentOperationCount(2)
 UploadManager.instance.updateQualityOfService(.background)
 ```
 
-### Pluggin
+## Pluggin
 
 - RequestAdapter
 
@@ -153,6 +152,6 @@ public struct NetworkLogger: EventMonitor {
 ## License
 
 - RequestKits is using [Alamofire](https://github.com/Alamofire/Alamofire). See  [LICENSE](https://github.com/Alamofire/Alamofire/blob/master/LICENSE) for more information.
-- RequestKits is using [RxSwift](https://github.com/ReactiveX/RxSwift). See  [LICENSE](https://github.com/ReactiveX/RxSwift/blob/master/LICENSE) for more information.
+- RequestKits is using [RxSwift](https://github.com/ReactiveX/RxSwift). See  [LICENSE](https://github.com/ReactiveX/RxSwift/blob/master/LICENSE.md) for more information.
 - RequestKits is released under the MIT license. See [LICENSE](https://github.com/nghiadev95/RequestKits/blob/master/LICENSE) for more information.
 

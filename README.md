@@ -153,5 +153,6 @@ public struct NetworkLogger: EventMonitor {
 
 - RequestKits is using [Alamofire](https://github.com/Alamofire/Alamofire). See  [LICENSE](https://github.com/Alamofire/Alamofire/blob/master/LICENSE) for more information.
 - RequestKits is using [RxSwift](https://github.com/ReactiveX/RxSwift). See  [LICENSE](https://github.com/ReactiveX/RxSwift/blob/master/LICENSE.md) for more information.
+- RequestKits is using source code from [Moya](https://github.com/Moya/Moya). See  [LICENSE](https://github.com/Moya/Moya/blob/master/License.md) for more information.
 - RequestKits is released under the MIT license. See [LICENSE](https://github.com/nghiadev95/RequestKits/blob/master/LICENSE) for more information.
 

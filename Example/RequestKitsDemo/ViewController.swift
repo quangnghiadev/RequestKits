@@ -10,6 +10,7 @@ import Alamofire
 import RequestKits
 import RxSwift
 import UIKit
+import DevelopKits
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet var tableView: UITableView!
@@ -88,7 +89,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print(error as Any)
             }
         case 4:
-            let request: Observable<EmptyEntity> = network.rxRequest(requestable: GetAllPostsRequest())
+            let request: Observable<HeaderResponse> = network.rxRequest(requestable: HeaderRequest())
             request.subscribe(onNext: { response in
                 print(response)
             }).disposed(by: disposeBag)
@@ -102,11 +103,11 @@ struct EmptyEntity: Codable {}
 
 struct GetAllPostsRequest: Requestable {
     var baseURL: URL {
-        return URL(string: "https://httpbin.org/")!
+        return URL(string: "http://httpbin.org/")!
     }
 
     var path: String {
-        return "get"
+        return "headers"
     }
 
     var method: HTTPMethod {
@@ -116,4 +117,41 @@ struct GetAllPostsRequest: Requestable {
     var task: Task {
         .requestPlain
     }
+}
+
+struct HeaderRequest: Requestable {
+    var baseURL: URL {
+        return URL(string: "http://httpbin.org/")!
+    }
+
+    var path: String {
+        return "headers"
+    }
+
+    var method: HTTPMethod {
+        return .get
+    }
+
+    var task: Task {
+        .requestPlain
+    }
+
+    var keyPath: String? {
+        return "headers"
+    }
+}
+
+struct HeaderResponse: Decodable {
+    let acceptType: AcceptType
+
+    enum CodingKeys: String, CodingKey {
+        case acceptType = "Accept"
+    }
+}
+
+enum AcceptType: String, Decodable, UnknownCase {
+    static let unknownCase: AcceptType = .unknown
+
+    case json = "application/json"
+    case unknown
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3B8B737C24F1276300701E3F /* RequestKits in Frameworks */ = {isa = PBXBuildFile; productRef = 3B8B737B24F1276300701E3F /* RequestKits */; };
+		3BC1B7A124FBA1850060A9F1 /* DevelopKits in Frameworks */ = {isa = PBXBuildFile; productRef = 3BC1B7A024FBA1850060A9F1 /* DevelopKits */; };
 		3BF0193424513C80001C0775 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF0193324513C80001C0775 /* AppDelegate.swift */; };
 		3BF0193824513C80001C0775 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF0193724513C80001C0775 /* ViewController.swift */; };
 		3BF0193B24513C80001C0775 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BF0193924513C80001C0775 /* Main.storyboard */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		3B8B737A24F126D700701E3F /* RequestKits */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RequestKits; path = ..; sourceTree = "<group>"; };
+		3BC1B79F24FBA13B0060A9F1 /* DevelopKits */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DevelopKits; path = ../../DevelopKits; sourceTree = "<group>"; };
 		3BF0193024513C80001C0775 /* RequestKitsDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RequestKitsDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BF0193324513C80001C0775 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BF0193724513C80001C0775 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -32,6 +34,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B8B737C24F1276300701E3F /* RequestKits in Frameworks */,
+				3BC1B7A124FBA1850060A9F1 /* DevelopKits in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,6 +51,7 @@
 		3BF0192724513C80001C0775 = {
 			isa = PBXGroup;
 			children = (
+				3BC1B79F24FBA13B0060A9F1 /* DevelopKits */,
 				3B8B737A24F126D700701E3F /* RequestKits */,
 				3BF0193224513C80001C0775 /* RequestKitsDemo */,
 				3BF0193124513C80001C0775 /* Products */,
@@ -94,6 +98,7 @@
 			name = RequestKitsDemo;
 			packageProductDependencies = (
 				3B8B737B24F1276300701E3F /* RequestKits */,
+				3BC1B7A024FBA1850060A9F1 /* DevelopKits */,
 			);
 			productName = TEQNetworkDemo;
 			productReference = 3BF0193024513C80001C0775 /* RequestKitsDemo.app */;
@@ -301,6 +306,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PVA52BM8PV;
 				INFOPLIST_FILE = "$(SRCROOT)/RequestKitsDemo/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -321,6 +327,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PVA52BM8PV;
 				INFOPLIST_FILE = "$(SRCROOT)/RequestKitsDemo/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -360,6 +367,10 @@
 		3B8B737B24F1276300701E3F /* RequestKits */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RequestKits;
+		};
+		3BC1B7A024FBA1850060A9F1 /* DevelopKits */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DevelopKits;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

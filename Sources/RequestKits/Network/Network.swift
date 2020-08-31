@@ -226,6 +226,7 @@ private extension Network {
             return .success(resultObject)
         } catch {
             errorReporter?.report(error: error)
+            log("Decoding with error: \((error as NSError).userInfo)")
             return .failure(NetworkError.objectMapping(error, nil))
         }
     }

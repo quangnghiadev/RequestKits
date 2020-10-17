@@ -22,11 +22,11 @@ final class WorkerOperation: AsynchronousOperation {
     }
 
     deinit {
-        log("WorkerOperation (\(id)) - deinit!")
+//        log("WorkerOperation (\(id)) - deinit!")
     }
 
     override func main() {
-        log("WorkerOperation (\(id)) - run main task!")
+//        log("WorkerOperation (\(id)) - run main task!")
         mainTask? { [weak self] in
             self?.finish()
         }
@@ -34,7 +34,7 @@ final class WorkerOperation: AsynchronousOperation {
 
     override func cancel() {
         if !isCancelled, !isFinished {
-            log("WorkerOperation (\(id)) - cancel task!")
+//            log("WorkerOperation (\(id)) - cancel task!")
             cancelTask?()
         }
         finish()

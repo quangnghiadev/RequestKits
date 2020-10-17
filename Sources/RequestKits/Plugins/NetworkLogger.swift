@@ -11,56 +11,51 @@ import Foundation
 
 public struct NetworkLogger: EventMonitor {
     public enum Level: String {
-        case verbose
-        case debug
-        case info
+        case full
+        case lite
     }
 
     private let level: Level
     public let queue = DispatchQueue(label: "com.requestkits.logger", qos: .utility, attributes: .concurrent)
 
-    public init(level: Level = .info) {
+    public init(level: Level = .lite) {
         self.level = level
     }
 
     public func request(_ request: DataRequest, didParseResponse response: DataResponse<Data?, AFError>) {
-        var message: String = ""
+        let requestBasicInfo = """
+        ______________[Request]______________
+        [URL]: \(response.request?.url?.absoluteString ?? "")
+        [Method]: \(response.request?.httpMethod ?? "")
+        """
+        let requestHeader = "[Headers]: \n\(response.response?.headers.sorted() ?? [:])"
+        let requestBody = "[Body]: \n\(response.request?.httpBody.map { getPrettyPrintedJSON(data: $0) } ?? "None")"
 
-        let requestDescription = response.request.map { "\($0.httpMethod!) \($0)" } ?? ""
-        let requestBody = response.request?.httpBody.map { String(decoding: $0, as: UTF8.self) } ?? "None"
-        let responseDescription = response.response.map { response in
-            let sortedHeaders = response.headers.sorted()
-            var result = """
-            [Status Code]: \(response.statusCode)
-            """
-            if level != .info {
-                result += "\n[Headers]:\n\(sortedHeaders)"
-            }
-            return result
-        } ?? "nil"
-        let responseBody = response.data.map { getPrettyPrintedJSON(data: $0) } ?? "None"
-        let metricsDescription = response.metrics.map { "\($0.taskInterval.duration)s" } ?? "None"
+        let responseBasicInfo = """
+        ______________[Response]______________
+        [Status Code]: \(response.response?.statusCode ?? 0)
+        """
+        let responseHeader = "[Headers]: \n\(response.response?.headers.sorted() ?? [:])"
+        let responseBody = "[Body]: \n\(response.data.map { getPrettyPrintedJSON(data: $0) } ?? "None")"
+        let responseTime = "[Duration]: \(response.metrics.map { "\($0.taskInterval.duration)s" } ?? "None")"
 
-        let logLevelString = "[NetworkLogger] - [Level: \(level.rawValue.capitalized)]"
-        let requestString = "[Request]: \(requestDescription)"
-        let requestBodyString = "[Request Body]: \n\(requestBody)"
-        let responseString = "[Response]: \n\(responseDescription)"
-        let responseBodyString = "[Response Body]: \n\(responseBody)"
-        let dataString = "[Data]: \(response.data?.description ?? "None")"
-        let networkDurationString = "[Network Duration]: \(metricsDescription)"
-        let serializationDurationString = "[Serialization Duration]: \(response.serializationDuration)s"
-        let resultString = "[Result]: \(response.result)"
+        var message = ""
 
         switch level {
-            case .info:
-                message = [logLevelString, requestString, responseString].joined(separator: "\n")
-            case .debug:
-                message = [logLevelString, requestString, requestBodyString, responseString, responseBodyString].joined(separator: "\n")
-            case .verbose:
-                message = [logLevelString, requestString, requestBodyString, responseString, responseBodyString, dataString, networkDurationString, serializationDurationString, resultString].joined(separator: "\n")
+        case .lite:
+            message = [requestBasicInfo, responseBasicInfo, responseTime].joined(separator: "\n")
+        case .full:
+            message = [requestBasicInfo, requestHeader, requestBody, responseBasicInfo, responseTime, responseHeader, responseBody].joined(separator: "\n")
         }
+
         queue.async {
-            print(message)
+            print(
+                """
+                ________________________________________________________________
+                \(message)
+                ________________________________________________________________
+                """
+            )
         }
     }
 

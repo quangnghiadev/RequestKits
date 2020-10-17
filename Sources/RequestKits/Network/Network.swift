@@ -132,11 +132,11 @@ public extension Network {
     }
 }
 
-// MARK: Support Codable Response
+// MARK: Support Decodable Response
 
 public extension Network {
     @discardableResult
-    func request<T, H>(requestable: T, completion: @escaping (Result<H, Error>) -> Void) -> Cancellable where T: Requestable, H: Decodable {
+    func request<T>(requestable: T, completion: @escaping (Result<T.Response, Error>) -> Void) -> Cancellable where T: Requestable, T.Response: Decodable {
         return request(requestable: requestable) { data, error in
             if let err = error {
                 completion(.failure(err))
@@ -147,7 +147,7 @@ public extension Network {
     }
 
     @discardableResult
-    func upload<T, H>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Result<H, Error>) -> Void) -> Cancellable where T: Requestable, H: Decodable {
+    func upload<T>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Result<T.Response, Error>) -> Void) -> Cancellable where T: Requestable, T.Response: Decodable {
         return upload(requestable: requestable, progress: progress) { data, error in
             if let err = error {
                 completion(.failure(err))
@@ -158,12 +158,12 @@ public extension Network {
     }
 }
 
-// MARK: Support Reactive Programming
+// MARK: Support RxSwift
 
 public extension Network {
-    func rxRequest<T, H>(requestable: T, atKeyPath keyPath: String? = nil) -> Observable<H> where T: Requestable, H: Decodable {
-        return Observable<H>.create { (observer) -> Disposable in
-            let cancelable = self.request(requestable: requestable) { (result: Result<H, Error>) in
+    func rxRequest<T>(requestable: T) -> Observable<T.Response> where T: Requestable, T.Response: Decodable {
+        return Observable<T.Response>.create { (observer) -> Disposable in
+            let cancelable = self.request(requestable: requestable) { (result: Result<T.Response, Error>) in
                 switch result {
                 case let .success(object):
                     observer.onNext(object)
@@ -194,9 +194,9 @@ public extension Network {
         }
     }
 
-    func rxUpload<T, H>(requestable: T, atKeyPath keyPath: String? = nil, progress: Request.ProgressHandler? = nil) -> Observable<H> where T: Requestable, H: Decodable {
-        return Observable<H>.create { (observer) -> Disposable in
-            let cancelable = self.upload(requestable: requestable, progress: progress) { (result: Result<H, Error>) in
+    func rxUpload<T>(requestable: T, progress: Request.ProgressHandler? = nil) -> Observable<T.Response> where T: Requestable, T.Response: Decodable {
+        return Observable<T.Response>.create { (observer) -> Disposable in
+            let cancelable = self.upload(requestable: requestable, progress: progress) { (result: Result<T.Response, Error>) in
                 switch result {
                 case let .success(object):
                     observer.onNext(object)
@@ -215,13 +215,13 @@ public extension Network {
 // MARK: Helper
 
 private extension Network {
-    private func decodeResponse<H: Decodable>(data: Data?, atKeyPath keyPath: String? = nil) -> Result<H, Error> {
+    private func decodeResponse<T: Decodable>(data: Data?, atKeyPath keyPath: String? = nil) -> Result<T, Error> {
         do {
-            let resultObject: H
+            let resultObject: T
             if let keyPath = keyPath {
-                resultObject = try decoder.decode(H.self, from: data ?? Data(), keyPath: keyPath)
+                resultObject = try decoder.decode(T.self, from: data ?? Data(), keyPath: keyPath)
             } else {
-                resultObject = try decoder.decode(H.self, from: data ?? Data())
+                resultObject = try decoder.decode(T.self, from: data ?? Data())
             }
             return .success(resultObject)
         } catch {

@@ -20,7 +20,7 @@ public struct NetworkConfig {
                 errorReporter: ErrorReportable? = nil,
                 requestAdapters: [RequestAdapter] = [],
                 requestRetrier: [RequestRetrier] = [],
-                eventMonitors: [EventMonitor] = [NetworkLogger(level: .info)])
+                eventMonitors: [EventMonitor] = [NetworkLogger(level: .lite)])
     {
         self.decoder = decoder
         self.errorReporter = errorReporter

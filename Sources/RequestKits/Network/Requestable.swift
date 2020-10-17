@@ -10,6 +10,11 @@ import Alamofire
 import Foundation
 
 public protocol Requestable: URLRequestConvertible {
+    associatedtype Response
+
+    /// The response type of request
+    var responseType: Response.Type { get }
+
     /// The target's base `URL`.
     var baseURL: URL { get }
 
@@ -33,6 +38,10 @@ public protocol Requestable: URLRequestConvertible {
 }
 
 public extension Requestable {
+    var responseType: Response.Type {
+        return Response.self
+    }
+
     var keyPath: String? {
         return nil
     }

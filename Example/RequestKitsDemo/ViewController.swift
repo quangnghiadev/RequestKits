@@ -16,7 +16,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var tableView: UITableView!
 
     private let disposeBag = DisposeBag()
-    private let network = Network(config: NetworkConfig())
+    private let network = Network(config: NetworkConfig(eventMonitors: [NetworkLogger(level: .full)]))
 
     let exampleTitle = ["Download", "Download -> Cancel before success", "Normal Request", "Requestable", "Reactive"]
 
@@ -89,7 +89,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print(error as Any)
             }
         case 4:
-            let request: Observable<HeaderResponse> = network.rxRequest(requestable: HeaderRequest())
+            let request = network.rxRequest(requestable: PostAnything())
             request.subscribe(onNext: { response in
                 print(response)
             }).disposed(by: disposeBag)
@@ -102,6 +102,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 struct EmptyEntity: Codable {}
 
 struct GetAllPostsRequest: Requestable {
+    typealias Response = Data
+
     var baseURL: URL {
         return URL(string: "http://httpbin.org/")!
     }
@@ -119,7 +121,38 @@ struct GetAllPostsRequest: Requestable {
     }
 }
 
+struct AnyThingResponse: Decodable {
+    let id: String
+    let name: String
+}
+
+struct PostAnything: Requestable {
+    typealias Response = AnyThingResponse
+
+    var baseURL: URL {
+        return URL(string: "http://httpbin.org")!
+    }
+
+    var path: String {
+        return "/anything"
+    }
+
+    var method: HTTPMethod {
+        return .post
+    }
+
+    var task: Task {
+        return .requestParameters(parameters: ["id": UUID().uuidString, "name": "Stuart"], encoding: JSONEncoding.default)
+    }
+
+    var keyPath: String? {
+        return "json"
+    }
+}
+
 struct HeaderRequest: Requestable {
+    typealias Response = HeaderResponse
+
     var baseURL: URL {
         return URL(string: "http://httpbin.org/")!
     }

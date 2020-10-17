@@ -70,7 +70,7 @@ public class QueueManager<RequestTask: Request, ResponseData> {
     func addOperation(request: RequestTask, responseHandler: @escaping (ResponseData) -> Void) -> Cancellable {
         // 1. Create UUID for each Operation
         let operationID = UUID().uuidString
-        log("New Download Operation (\(operationID))")
+//        log("New Download Operation (\(operationID))")
         // 2. Create DownloadOperator
         let operation = WorkerOperation(id: operationID, mainTask: { [weak self] finishBlock in
             self?.execute(request: request) { dataResponse in

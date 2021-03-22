@@ -2,9 +2,7 @@
   <img src="https://raw.githubusercontent.com/quangnghiadev/RequestKits/master/Assets/logo.png" title="RequestKits">
 </p>
 
-[![Build Status](https://github.com/quangnghiadev/RequestKits/workflows/CI/badge.svg?branch=master)](https://github.com/quangnghiadev/RequestKits/actions)
-[![Cocoapods platforms](https://img.shields.io/cocoapods/p/RequestKits)](https://github.com/quangnghiadev/RequestKits)
-[![Cocoapods](https://img.shields.io/cocoapods/v/RequestKits.svg)](https://cocoapods.org/pods/RequestKits)
+[![Build Status](https://github.com/quangnghiadev/RequestKits/workflows/CI/badge.svg?branch=main)](https://github.com/quangnghiadev/RequestKits/actions)
 [![SPM compatible](https://img.shields.io/badge/SPM-Compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager/)
 [![Swift](https://img.shields.io/badge/Swift-5.3-orange.svg)](https://swift.org)
 [![Xcode](https://img.shields.io/badge/Xcode-11.6-blue.svg)](https://developer.apple.com/xcode)

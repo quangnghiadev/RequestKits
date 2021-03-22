@@ -24,29 +24,8 @@
 
 ## Installation
 
-### CocoaPods
-
-To integrate RequestKits into your Xcode project using CocoaPods, specify it in your `Podfile`
-
-```ruby
-pod 'RequestKits'
-```
-
 ### Swift Package Manager
-You can use The Swift Package Manager to install RequestKits by adding the proper description to your `Package.swift` 
-
-```swift
-import PackageDescription
-
-let package = Package(
-    name: "YOUR_PROJECT_NAME",
-    targets: [],
-    dependencies: [
-        .package(url: "https://github.com/quangnghiadev/RequestKits.git", from: "1.0.0")
-    ]
-)
-```
-
+You can use The Swift Package Manager to install RequestKits by adding https://github.com/quangnghiadev/RequestKits.git to Swift Package of your XCode project
 
 ## Usage
 

@@ -7,10 +7,11 @@
 //
 
 import Foundation
+import AsyncOperation
 
 typealias WorkerCallback = () -> Void
 
-final class WorkerOperation: AsynchronousOperation {
+final class WorkerOperation: AsyncOperation {
     let id: String
     var mainTask: ((@escaping WorkerCallback) -> Void)?
     var cancelTask: WorkerCallback?

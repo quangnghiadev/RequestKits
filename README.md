@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/nghiadev95/RequestKits/master/Assets/logo.png" title="RequestKits">
+  <img src="https://raw.githubusercontent.com/quangnghiadev/RequestKits/master/Assets/logo.png" title="RequestKits">
 </p>
 
-[![Build Status](https://github.com/nghiadev95/RequestKits/workflows/CI/badge.svg?branch=master)](https://github.com/nghiadev95/RequestKits/actions)
-[![Cocoapods platforms](https://img.shields.io/cocoapods/p/RequestKits)](https://github.com/nghiadev95/RequestKits)
+[![Build Status](https://github.com/quangnghiadev/RequestKits/workflows/CI/badge.svg?branch=master)](https://github.com/quangnghiadev/RequestKits/actions)
+[![Cocoapods platforms](https://img.shields.io/cocoapods/p/RequestKits)](https://github.com/quangnghiadev/RequestKits)
 [![Cocoapods](https://img.shields.io/cocoapods/v/RequestKits.svg)](https://cocoapods.org/pods/RequestKits)
 [![SPM compatible](https://img.shields.io/badge/SPM-Compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager/)
 [![Swift](https://img.shields.io/badge/Swift-5.3-orange.svg)](https://swift.org)
@@ -42,7 +42,7 @@ let package = Package(
     name: "YOUR_PROJECT_NAME",
     targets: [],
     dependencies: [
-        .package(url: "https://github.com/nghiadev95/RequestKits.git", from: "1.0.0")
+        .package(url: "https://github.com/quangnghiadev/RequestKits.git", from: "1.0.0")
     ]
 )
 ```
@@ -154,5 +154,5 @@ public struct NetworkLogger: EventMonitor {
 - RequestKits is using [Alamofire](https://github.com/Alamofire/Alamofire). See  [LICENSE](https://github.com/Alamofire/Alamofire/blob/master/LICENSE) for more information.
 - RequestKits is using [RxSwift](https://github.com/ReactiveX/RxSwift). See  [LICENSE](https://github.com/ReactiveX/RxSwift/blob/master/LICENSE.md) for more information.
 - RequestKits is using source code from [Moya](https://github.com/Moya/Moya). See  [LICENSE](https://github.com/Moya/Moya/blob/master/License.md) for more information.
-- RequestKits is released under the MIT license. See [LICENSE](https://github.com/nghiadev95/RequestKits/blob/master/LICENSE) for more information.
+- RequestKits is released under the MIT license. See [LICENSE](https://github.com/quangnghiadev/RequestKits/blob/master/LICENSE) for more information.
 

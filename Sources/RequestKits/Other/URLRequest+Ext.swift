@@ -14,12 +14,10 @@ internal extension URLRequest {
         do {
             let encodable = AnyEncodable(encodable)
             httpBody = try encoder.encode(encodable)
-
             let contentTypeHeaderName = "Content-Type"
             if value(forHTTPHeaderField: contentTypeHeaderName) == nil {
                 setValue("application/json", forHTTPHeaderField: contentTypeHeaderName)
             }
-
             return self
         } catch {
             throw NetworkError.encodableMapping(error)

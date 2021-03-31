@@ -1,6 +1,0 @@
-line_length: 250
-disabled_rules:
-  - nesting
-  - identifier_name
-excluded:
-  - Pods

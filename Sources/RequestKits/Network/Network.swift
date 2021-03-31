@@ -8,12 +8,11 @@
 
 import Alamofire
 import Foundation
-import RxSwift
 
 public struct Network {
-    private let errorReporter: ErrorReportable?
-    private let session: Session
-    private let decoder: JSONDecoder
+    let errorReporter: ErrorReportable?
+    let session: Session
+    let decoder: JSONDecoder
 
     public init(config: NetworkConfig = NetworkConfig()) {
         self.decoder = config.decoder
@@ -23,98 +22,104 @@ public struct Network {
 
     // Data Request
     @discardableResult
-    public func request(_ convertible: URLRequestConvertible, validationType: ValidationType, completion: @escaping (Data?, Error?) -> Void) -> Cancellable {
+    public func request(_ convertible: URLRequestConvertible,
+                        validationType: ValidationType,
+                        completion: @escaping (Data?, Error?) -> Void) -> Request
+    {
         var request: DataRequest = session.request(convertible)
-        if validationType != .none {
+        if validationType != .none, !validationType.statusCodes.isEmpty {
             request = request.validate(statusCode: validationType.statusCodes)
         }
-
-        return RequestManager.instance.addOperation(request: request) { response in
-            switch response.result {
+        return request.response { dataResponse in
+            switch dataResponse.result {
             case let .success(data):
                 completion(data, nil)
             case let .failure(error):
                 self.errorReporter?.report(error: error)
-                completion(nil, NetworkError.underlying(error, Response(response)))
+                completion(nil, NetworkError.underlying(error, Response(dataResponse)))
             }
         }
     }
 
     // Data Download
     @discardableResult
-    public func download(_ convertible: URLRequestConvertible, validationType: ValidationType, progress: Request.ProgressHandler? = nil,
-                         destination: DownloadRequest.Destination = DownloadRequest.suggestedDownloadDestination(), completion: @escaping (URL?, Error?) -> Void) -> Cancellable
+    public func download(_ convertible: URLRequestConvertible,
+                         validationType: ValidationType,
+                         progress: Request.ProgressHandler? = nil,
+                         destination: DownloadRequest.Destination = DownloadRequest.suggestedDownloadDestination(),
+                         completion: @escaping (URL?, Error?) -> Void) -> Request
     {
         var request: DownloadRequest = session.download(convertible)
-        if validationType != .none {
+        if validationType != .none, !validationType.statusCodes.isEmpty {
             request = request.validate(statusCode: validationType.statusCodes)
         }
-
         if let progress = progress {
             request = request.downloadProgress(closure: progress)
         }
-
-        return DownloadManager.instance.addOperation(request: request) { response in
-            switch response.result {
+        return request.response { downloadResponse in
+            switch downloadResponse.result {
             case let .success(fileURL):
                 completion(fileURL, nil)
             case let .failure(error):
                 self.errorReporter?.report(error: error)
-                completion(nil, NetworkError.underlying(error, Response(response)))
+                completion(nil, NetworkError.underlying(error, Response(downloadResponse)))
             }
         }
     }
 
     // Data Upload
     @discardableResult
-    public func upload(_ convertible: URLRequestConvertible, validationType: ValidationType, multipartFormData: MultipartFormData, progress: Request.ProgressHandler? = nil, completion: @escaping (Data?, Error?) -> Void) -> Cancellable {
+    public func upload(_ convertible: URLRequestConvertible,
+                       validationType: ValidationType,
+                       multipartFormData: MultipartFormData,
+                       progress: Request.ProgressHandler? = nil,
+                       completion: @escaping (Data?, Error?) -> Void) -> Request
+    {
         var request = session.upload(multipartFormData: multipartFormData, with: convertible)
-        if validationType != .none {
+        if validationType != .none, !validationType.statusCodes.isEmpty {
             request = request.validate(statusCode: validationType.statusCodes)
         }
-
         if let progress = progress {
             request = request.uploadProgress(closure: progress)
         }
-
-        return UploadManager.instance.addOperation(request: request) { response in
-            switch response.result {
+        return request.response { dataResponse in
+            switch dataResponse.result {
             case let .success(data):
                 completion(data, nil)
             case let .failure(error):
                 self.errorReporter?.report(error: error)
-                completion(nil, NetworkError.underlying(error, Response(response)))
+                completion(nil, NetworkError.underlying(error, Response(dataResponse)))
             }
         }
     }
 }
 
-// MARK: Request with requestable
+// MARK: Request with Requestable
 
 public extension Network {
     @discardableResult
-    func request<T: Requestable>(requestable: T, completion: @escaping (Data?, Error?) -> Void) -> Cancellable {
+    func request<T: Requestable>(requestable: T, completion: @escaping (Data?, Error?) -> Void) -> Request {
         return sendRequest(requestable: requestable) { data, _, error in
             completion(data, error)
         }
     }
 
     @discardableResult
-    func download<T: Requestable>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (URL?, Error?) -> Void) -> Cancellable {
+    func download<T: Requestable>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (URL?, Error?) -> Void) -> Request {
         return sendRequest(requestable: requestable, progress: progress) { _, url, error in
             completion(url, error)
         }
     }
 
     @discardableResult
-    func upload<T: Requestable>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Data?, Error?) -> Void) -> Cancellable {
+    func upload<T: Requestable>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Data?, Error?) -> Void) -> Request {
         return sendRequest(requestable: requestable, progress: progress) { data, _, error in
             completion(data, error)
         }
     }
 
     @discardableResult
-    private func sendRequest<T: Requestable>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Data?, URL?, Error?) -> Void) -> Cancellable {
+    private func sendRequest<T: Requestable>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Data?, URL?, Error?) -> Void) -> Request {
         switch requestable.task {
         case let .downloadDestination(destination), let .downloadParameters(_, _, destination):
             return download(requestable, validationType: requestable.validationType, progress: progress, destination: destination) { url, error in
@@ -128,106 +133,6 @@ public extension Network {
             return request(requestable, validationType: requestable.validationType) { data, error in
                 completion(data, nil, error)
             }
-        }
-    }
-}
-
-// MARK: Support Decodable Response
-
-public extension Network {
-    @discardableResult
-    func request<T>(requestable: T, completion: @escaping (Result<T.Response, Error>) -> Void) -> Cancellable where T: Requestable, T.Response: Decodable {
-        return request(requestable: requestable) { data, error in
-            if let err = error {
-                completion(.failure(err))
-            } else {
-                completion(self.decodeResponse(data: data, atKeyPath: requestable.keyPath))
-            }
-        }
-    }
-
-    @discardableResult
-    func upload<T>(requestable: T, progress: Request.ProgressHandler? = nil, completion: @escaping (Result<T.Response, Error>) -> Void) -> Cancellable where T: Requestable, T.Response: Decodable {
-        return upload(requestable: requestable, progress: progress) { data, error in
-            if let err = error {
-                completion(.failure(err))
-            } else {
-                completion(self.decodeResponse(data: data, atKeyPath: requestable.keyPath))
-            }
-        }
-    }
-}
-
-// MARK: Support RxSwift
-
-public extension Network {
-    func rxRequest<T>(requestable: T) -> Observable<T.Response> where T: Requestable, T.Response: Decodable {
-        return Observable<T.Response>.create { (observer) -> Disposable in
-            let cancelable = self.request(requestable: requestable) { (result: Result<T.Response, Error>) in
-                switch result {
-                case let .success(object):
-                    observer.onNext(object)
-                    observer.onCompleted()
-                case let .failure(error):
-                    observer.onError(error)
-                }
-            }
-            return Disposables.create {
-                cancelable.cancel()
-            }
-        }
-    }
-
-    func rxDownload<T>(requestable: T, progress: Request.ProgressHandler? = nil) -> Observable<URL> where T: Requestable {
-        return Observable<URL>.create { (observer) -> Disposable in
-            let cancelable = self.download(requestable: requestable, progress: progress) { url, error in
-                if let err = error {
-                    observer.onError(err)
-                } else {
-                    observer.onNext(url!)
-                    observer.onCompleted()
-                }
-            }
-            return Disposables.create {
-                cancelable.cancel()
-            }
-        }
-    }
-
-    func rxUpload<T>(requestable: T, progress: Request.ProgressHandler? = nil) -> Observable<T.Response> where T: Requestable, T.Response: Decodable {
-        return Observable<T.Response>.create { (observer) -> Disposable in
-            let cancelable = self.upload(requestable: requestable, progress: progress) { (result: Result<T.Response, Error>) in
-                switch result {
-                case let .success(object):
-                    observer.onNext(object)
-                    observer.onCompleted()
-                case let .failure(error):
-                    observer.onError(error)
-                }
-            }
-            return Disposables.create {
-                cancelable.cancel()
-            }
-        }
-    }
-}
-
-// MARK: Helper
-
-private extension Network {
-    private func decodeResponse<T: Decodable>(data: Data?, atKeyPath keyPath: String? = nil) -> Result<T, Error> {
-        do {
-            let resultObject: T
-            if let keyPath = keyPath {
-                resultObject = try decoder.decode(T.self, from: data ?? Data(), keyPath: keyPath)
-            } else {
-                resultObject = try decoder.decode(T.self, from: data ?? Data())
-            }
-            return .success(resultObject)
-        } catch {
-            errorReporter?.report(error: error)
-            log("Decoding with error: \((error as NSError).userInfo)")
-            return .failure(NetworkError.objectMapping(error, nil))
         }
     }
 }

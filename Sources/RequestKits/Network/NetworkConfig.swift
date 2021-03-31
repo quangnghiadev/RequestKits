@@ -16,12 +16,13 @@ public struct NetworkConfig {
     public let requestRetrier: [RequestRetrier]
     public let eventMonitors: [EventMonitor]
 
-    public init(decoder: JSONDecoder = JSONDecoder(),
-                errorReporter: ErrorReportable? = nil,
-                requestAdapters: [RequestAdapter] = [],
-                requestRetrier: [RequestRetrier] = [],
-                eventMonitors: [EventMonitor] = [NetworkLogger(level: .lite)])
-    {
+    public init(
+        decoder: JSONDecoder = JSONDecoder(),
+        errorReporter: ErrorReportable? = nil,
+        requestAdapters: [RequestAdapter] = [],
+        requestRetrier: [RequestRetrier] = [],
+        eventMonitors: [EventMonitor] = []
+    ) {
         self.decoder = decoder
         self.errorReporter = errorReporter
         self.requestAdapters = requestAdapters
@@ -30,6 +31,6 @@ public struct NetworkConfig {
     }
 
     var interceptor: Interceptor? {
-        return Interceptor(adapters: requestAdapters, retriers: requestRetrier + [ConnectionLostRetryPolicy()])
+        return Interceptor(adapters: requestAdapters, retriers: requestRetrier)
     }
 }

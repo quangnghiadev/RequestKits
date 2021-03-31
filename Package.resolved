@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "AsyncOperation",
-        "repositoryURL": "https://github.com/quangnghiadev/AsyncOperation.git",
-        "state": {
-          "branch": "main",
-          "revision": "958d38bbfaef42052ba0139755e1538e7f429605",
-          "version": null
-        }
-      },
-      {
         "package": "RxSwift",
         "repositoryURL": "https://github.com/ReactiveX/RxSwift",
         "state": {

@@ -6,21 +6,25 @@ import PackageDescription
 let package = Package(
     name: "RequestKits",
     platforms: [
-        .iOS(.v10)
+        .iOS(.v11)
     ],
     products: [
         .library(name: "RequestKits",
-                 targets: ["RequestKits"])
+                 targets: ["RequestKits"]),
+        .library(name: "RxRequestKits",
+                 targets: ["RxRequestKits"])
     ],
     dependencies: [
         .package(url: "https://github.com/ReactiveX/RxSwift", .upToNextMajor(from: "5.0.0")),
-        .package(url: "https://github.com/Alamofire/Alamofire", .upToNextMajor(from: "5.1.0")),
-        .package(url: "https://github.com/quangnghiadev/AsyncOperation.git", .branch("main"))
+        .package(url: "https://github.com/Alamofire/Alamofire", .upToNextMajor(from: "5.0.0"))
     ],
     targets: [
         .target(
             name: "RequestKits",
-            dependencies: ["RxSwift", "Alamofire", "AsyncOperation"])
+            dependencies: ["Alamofire"]),
+        .target(
+            name: "RxRequestKits",
+            dependencies: ["RxSwift", "RequestKits"])
     ],
     swiftLanguageVersions: [
         .v5

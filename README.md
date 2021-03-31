@@ -85,31 +85,12 @@ request.subscribe(onNext: { response in
 ## Pluggin
 
 - RequestAdapter
-
--- Authentication
-
-```swift
-public enum Authentication {
-    case bearer(token: String)
-    case basic(token: String)
-    case credential(username: String, password: String)
-    case custom(name: String, token: String)
-}
-```
+-- [Authentication](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/AuthenticationAdapter.swift)
+-- [ParamKeyAdapter](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/ParamKeyAdapter.swift)
 
 - EventMonitor
+--[NetworkLogger](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/NetworkLogger.swift)
 
---NetworkLogger
-
-```swift
-public struct NetworkLogger: EventMonitor {
-    public enum Level: String {
-        case verbose
-        case debug
-        case info
-    }
-}
-```
 
 ## License
 

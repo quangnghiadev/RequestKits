@@ -84,12 +84,14 @@ request.subscribe(onNext: { response in
 
 ## Pluggin
 
-- RequestAdapter
--- [Authentication](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/AuthenticationAdapter.swift)
--- [ParamKeyAdapter](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/ParamKeyAdapter.swift)
+### RequestAdapter
 
-- EventMonitor
---[NetworkLogger](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/NetworkLogger.swift)
+- [Authentication](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/AuthenticationAdapter.swift)
+- [ParamKeyAdapter](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/ParamKeyAdapter.swift)
+
+### EventMonitor
+
+- [NetworkLogger](https://github.com/quangnghiadev/RequestKits/blob/main/Sources/RequestKits/Plugins/NetworkLogger.swift)
 
 
 ## License

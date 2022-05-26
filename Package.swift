@@ -24,7 +24,7 @@ let package = Package(
             dependencies: ["Alamofire"]),
         .target(
             name: "RxRequestKits",
-            dependencies: ["RxSwift", "RequestKits"])
+            dependencies: ["RxSwift", "RxCocoa", "RequestKits"])
     ],
     swiftLanguageVersions: [
         .v5
